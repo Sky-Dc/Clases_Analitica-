@@ -1,0 +1,375 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Asistente Turístico - Miguel Colorado</title>
+    <style>
+        /* Estilos generales y fondo visual tipo selva */
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f2c20 0%, #1b4332 50%, #2d6a4f 100%);
+            color: #ffffff;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: space-between;
+            padding: 20px;
+            overflow-x: hidden;
+        }
+
+        /* Contenedor principal tipo interfaz de tablet/kiosco */
+        .app-container {
+            width: 100%;
+            max-width: 900px;
+            background: rgba(27, 67, 50, 0.85);
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 24px;
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.5);
+            padding: 30px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+        }
+
+        /* Cabecera */
+        header {
+            text-align: center;
+            margin-bottom: 25px;
+        }
+
+        .badge {
+            background-color: #2d6a4f;
+            color: #d8f3dc;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: bold;
+            letter-spacing: 1px;
+            text-transform: uppercase;
+            border: 1px solid #52b788;
+        }
+
+        h1 {
+            font-size: 32px;
+            color: #ffb703;
+            margin-top: 10px;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+
+        p.subtitle {
+            color: #b7e4c7;
+            font-size: 14px;
+            margin-top: 5px;
+        }
+
+        /* Área de contenido central (Muñequitos + Menú) */
+        .main-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            width: 100%;
+            gap: 20px;
+        }
+
+        /* Simulación de los personajes a los lados */
+        .character-side {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            width: 160px;
+            text-align: center;
+        }
+
+        .speech-bubble {
+            background: #ffffff;
+            color: #1b4332;
+            padding: 8px 12px;
+            border-radius: 12px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-bottom: 10px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
+            position: relative;
+            animation: flotar 3s ease-in-out infinite;
+        }
+
+        @keyframes flotar {
+            0%, 100% { transform: translateY(0); }
+            50% { transform: translateY(-5px); }
+        }
+
+        .avatar-circle {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            border: 4px solid #ffb703;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 45px;
+            box-shadow: 0 8px 16px rgba(0,0,0,0.3);
+        }
+
+        .avatar-boy { background-color: #d8f3dc; }
+        .avatar-girl { background-color: #f8edeb; }
+
+        .character-name {
+            font-size: 12px;
+            color: #d8f3dc;
+            margin-top: 8px;
+            font-weight: 600;
+        }
+
+        /* Cuadrícula de Botones / Opciones */
+        .menu-grid {
+            display: grid;
+            grid-template-columns: 1fr;
+            gap: 12px;
+            width: 100%;
+            max-width: 450px;
+        }
+
+        .menu-btn {
+            background: linear-gradient(135deg, #2d6a4f 0%, #1b4332 100%);
+            border: 1px solid #52b788;
+            border-radius: 14px;
+            padding: 15px 20px;
+            color: white;
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.1);
+            text-align: left;
+        }
+
+        .menu-btn:hover {
+            background: linear-gradient(135deg, #40916c 0%, #2d6a4f 100%);
+            transform: translateY(-3px);
+            box-shadow: 0 8px 15px rgba(0,0,0,0.3);
+            border-color: #ffb703;
+        }
+
+        .menu-btn.special {
+            background: linear-gradient(135deg, #fb8500 0%, #ffb703 100%);
+            border: 1px solid #ffd166;
+            color: #0f2c20;
+            font-weight: bold;
+        }
+
+        .menu-btn.special:hover {
+            background: linear-gradient(135deg, #ffb703 0%, #fb8500 100%);
+        }
+
+        .btn-icon {
+            font-size: 24px;
+            background: rgba(0, 0, 0, 0.2);
+            padding: 10px;
+            border-radius: 10px;
+        }
+
+        .btn-text h3 {
+            font-size: 16px;
+            color: #ffb703;
+        }
+
+        .menu-btn.special .btn-text h3 {
+            color: #0f2c20;
+        }
+
+        .btn-text p {
+            font-size: 12px;
+            color: #d8f3dc;
+            margin-top: 2px;
+        }
+
+        .menu-btn.special .btn-text p {
+            color: #372200;
+        }
+
+        /* Ventana emergente (Modal) */
+        #modal-overlay {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            background: rgba(0, 0, 0, 0.7);
+            backdrop-filter: blur(5px);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+
+        .modal-box {
+            background: #1b4332;
+            border: 2px solid #ffb703;
+            border-radius: 20px;
+            padding: 30px;
+            width: 90%;
+            max-width: 450px;
+            text-align: center;
+            box-shadow: 0 15px 35px rgba(0,0,0,0.5);
+        }
+
+        .modal-box h2 {
+            color: #ffb703;
+            margin-bottom: 15px;
+            font-size: 22px;
+        }
+
+        .modal-box p {
+            color: #e9f5ed;
+            font-size: 14px;
+            line-height: 1.6;
+            margin-bottom: 25px;
+            text-align: left;
+        }
+
+        .close-btn {
+            background-color: #ffb703;
+            color: #0f2c20;
+            border: none;
+            padding: 12px 25px;
+            border-radius: 10px;
+            font-weight: bold;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+
+        .close-btn:hover {
+            background-color: #fb8500;
+            color: white;
+        }
+
+        footer {
+            margin-top: 15px;
+            font-size: 11px;
+            color: #b7e4c7;
+            opacity: 0.8;
+        }
+    </style>
+</head>
+<body>
+
+    <div class="app-container">
+        <!-- CABECERA -->
+        <header>
+            <span class="badge">Ecoturismo • Campeche</span>
+            <h1>¡Bienvenidos a Miguel Colorado!</h1>
+            <p class="subtitle">Selecciona una opción para comenzar tu recorrido</p>
+        </header>
+
+        <!-- CONTENIDO CENTRAL CON PERSONAJES Y MENÚ -->
+        <div class="main-content">
+            
+            <!-- Muñequito Izquierda -->
+            <div class="character-side">
+                <div class="speech-bubble">¡K'iin muk'ta!</div>
+                <div class="avatar-circle avatar-boy">👦🏽</div>
+                <span class="character-name">Guía Local</span>
+            </div>
+
+            <!-- Menú de Botones -->
+            <div class="menu-grid">
+                <button class="menu-btn" onclick="abrirModal('historia')">
+                    <span class="btn-icon">🌿</span>
+                    <div class="btn-text">
+                        <h3>Historia del Ejido</h3>
+                        <p>Conoce el origen de Miguel Colorado</p>
+                    </div>
+                </button>
+
+                <button class="menu-btn" onclick="abrirModal('cenotes')">
+                    <span class="btn-icon">💧</span>
+                    <div class="btn-text">
+                        <h3>Tesoros (Cenotes)</h3>
+                        <p>Aktun Ha y Los Pericos</p>
+                    </div>
+                </button>
+
+                <button class="menu-btn" onclick="abrirModal('gastronomia')">
+                    <span class="btn-icon">🍲</span>
+                    <div class="btn-text">
+                        <h3>Sabor Local</h3>
+                        <p>Gastronomía tradicional</p>
+                    </div>
+                </button>
+
+                <button class="menu-btn special" onclick="abrirModal('traductor')">
+                    <span class="btn-icon">🗣️</span>
+                    <div class="btn-text">
+                        <h3>Traductor Express</h3>
+                        <p>Maya, Chol, Tseltal, Q'eqchi', Español e Inglés</p>
+                    </div>
+                </button>
+            </div>
+
+            <!-- Muñequita Derecha -->
+            <div class="character-side">
+                <div class="speech-bubble">¡Dios biko'!</div>
+                <div class="avatar-circle avatar-girl">👧🏽</div>
+                <span class="character-name">Anfitriona Cultural</span>
+            </div>
+
+        </div>
+    </div>
+
+    <footer>
+        Asistente Interactivo de Lenguas Maternas • Diseñado para el Ejido Miguel Colorado, Escárcega
+    </footer>
+
+    <!-- VENTANA MODAL -->
+    <div id="modal-overlay">
+        <div class="modal-box">
+            <h2 id="modal-titulo">Título</h2>
+            <p id="modal-texto">Contenido de la sección...</p>
+            <button class="close-btn" onclick="cerrarModal()">Regresar al Menú</button>
+        </div>
+    </div>
+
+    <!-- SCRIPT DE CONTROL -->
+    <script>
+        function abrirModal(tipo) {
+            const overlay = document.getElementById('modal-overlay');
+            const titulo = document.getElementById('modal-titulo');
+            const texto = document.getElementById('modal-texto');
+
+            if (tipo === 'historia') {
+                titulo.innerText = "🌿 Historia de Miguel Colorado";
+                texto.innerText = "Miguel Colorado es un ejido emblemático del municipio de Escárcega, Campeche. Destaca por su calidez humana, su rica historia forestal y agrícola, y por resguardar cuerpos de agua de belleza incomparable en medio de la selva baja.";
+            } else if (tipo === 'cenotes') {
+                titulo.innerText = "💧 Tesoros Naturales (Cenotes)";
+                texto.innerText = "El ejido cuenta con impresionantes cenotes como Aktun Ha y Los Pericos, ideales para el ecoturismo, nado en aguas cristalinas, paseos en kayak, tirolesa y la convivencia armónica con la biodiversidad local.";
+            } else if (tipo === 'gastronomia') {
+                titulo.innerText = "🍲 Sabor Local y Tradiciones";
+                texto.innerText = "Las cocineras tradicionales del ejido ofrecen platillos típicos preparados con sazón de la región, rescatando ingredientes locales y brindando una experiencia culinaria auténtica a los visitantes.";
+            } else if (tipo === 'traductor') {
+                titulo.innerText = "🗣️ Centro de Traducción Express (6 Lenguas)";
+                texto.innerText = "Frase de ejemplo: '¿Cuánto cuesta la entrada?'\n\n" +
+                                  "• Maya Yucateco: ¿Jay p'éel tak'in ku konik u yochel?\n" +
+                                  "• Chol: ¿Bʌx chuñ u yichel cenote?\n" +
+                                  "• Tseltal: ¿Bayuk stojel ta cenote?\n" +
+                                  "• Q'eqchi': ¿B'ar wan li xk'ab'al ha'?\n" +
+                                  "• Español: ¿Cuánto cuesta la entrada?\n" +
+                                  "• Inglés: How much is the entrance?";
+            }
+
+            overlay.style.display = 'flex';
+        }
+
+        function cerrarModal() {
+            document.getElementById('modal-overlay').style.display = 'none';
+        }
+    </script>
+</body>
+</html>
